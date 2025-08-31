@@ -1,0 +1,2 @@
+a=34 b=3423244 s=hello
+tuple=(34, "demo", 35)

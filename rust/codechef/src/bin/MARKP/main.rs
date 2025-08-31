@@ -8,14 +8,17 @@ fn solve<R: Read, W: Write>(mut reader: R, mut writer: W) {
     reader.read_to_string(&mut input).unwrap();
     let mut iter = input.split_whitespace();
 
+    writeln!(writer, "{:?}", iter).unwrap();
+
     let t: usize = iter.next().unwrap().parse().unwrap();
 
     for _ in 0..t {
-        let n: usize = iter.next().unwrap().parse().unwrap();
+        let _: usize = iter.next().unwrap().parse().unwrap();
         let s: String = iter.next().unwrap().parse().unwrap();
 
-        let result: i32 = s.chars().filter(|&c| c == '1').count() as i32;
-        writeln!(writer, "{}", result).unwrap();
+        let groups = s.split("0").collect::<Vec<_>>();
+        let answer = groups.contains(&"1") || groups.contains(&"11");
+        writeln!(writer, "{}", if answer { "No" } else { "Yes" }).unwrap();
     }
 }
 
