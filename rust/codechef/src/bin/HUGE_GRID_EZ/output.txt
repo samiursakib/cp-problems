@@ -1,2 +1,7 @@
-a=34 b=3423244 s=hello
+i32_number=34
+i64_number=99453954723432
+string=hello
 tuple=(34, "demo", 35)
+arr_1d_fix=[4, 23, 52]
+arr_1d_var=[1, 2, 3, 4, 5, 6, 7]
+arr_2d=[[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12]]

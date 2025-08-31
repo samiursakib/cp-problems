@@ -1,51 +1,66 @@
 use std::io::{self, Read, Write};
 use std::fs::{File, OpenOptions};
 
-// ===== Universal read macro =====
-macro_rules! read {
+// ===== Universal read macro (line-aware) =====
+macro_rules! read {    
+    // 2D array (consume multiple lines)
+    ($lines:expr, [[$t:ty]]) => {{ $lines.map(|line| line.split_whitespace().map(|s| s.parse::<$t>().unwrap()).collect::<Vec<$t>>()).collect::<Vec<Vec<$t>>>() }};
+    ($lines:expr, [[String]]) => {{ $lines.map(|line| line.split_whitespace().map(|s| s.to_string()).collect::<Vec<String>>()).collect::<Vec<Vec<String>>>() }};
+    // Fixed-length array from a single line
+    ($line:expr, [$t:ty; $n:expr]) => {{ $line.split_whitespace().take($n).map(|s| s.parse::<$t>().unwrap()).collect::<Vec<$t>>() }};
+    ($line:expr, [String; $n:expr]) => {{ $line.split_whitespace().take($n).map(|s| s.to_string()).collect::<Vec<String>>() }};    
+    // Variable-length array from a single line
+    ($line:expr, [$t:ty]) => {{ $line.split_whitespace().map(|s| s.parse::<$t>().unwrap()).collect::<Vec<$t>>() }};
+    ($line:expr, [String]) => {{ $line.split_whitespace().map(|s| s.to_string()).collect::<Vec<String>>() }};
     // Single values
-    ($it:expr, String) => { $it.next().unwrap().to_string() };
-    ($it:expr, $t:ty) => { $it.next().unwrap().parse::<$t>().unwrap() };
-
-    // 1D fixed-length array
-    ($it:expr, [$t:ty; $n:expr]) => { (0..$n).map(|_| $it.next().unwrap().parse::<$t>().unwrap()).collect::<Vec<$t>>() };
-    ($it:expr, [String; $n:expr]) => { (0..$n).map(|_| $it.next().unwrap().to_string()).collect::<Vec<String>>() };
-
-    // 1D variable-length array (consume all remaining tokens)
-    ($it:expr, [$t:ty]) => { $it.map(|s| s.parse::<$t>().unwrap()).collect::<Vec<$t>>() };
-    ($it:expr, [String]) => { $it.map(|s| s.to_string()).collect::<Vec<String>>() };
-
-    // 2D variable-length array: each "row" is a whitespace-separated string
-    ($it:expr, [[$t:ty]]) => { $it.map(|row| row.split_whitespace().map(|s| s.parse::<$t>().unwrap()).collect::<Vec<$t>>()).collect::<Vec<Vec<$t>>>() };
-    ($it:expr, [[String]]) => { $it.map(|row| row.split_whitespace().map(|s| s.to_string()).collect::<Vec<String>>()).collect::<Vec<Vec<String>>>() };
-
-    // Multiple values at once
-    ($it:expr, String, $($rest:ty),+) => { ($it.next().unwrap().to_string(), $( $it.next().unwrap().parse::<$rest>().unwrap() ),+ ) };
-    ($it:expr, $t:ty, $($rest:ty),+) => { ($it.next().unwrap().parse::<$t>().unwrap(), $( $it.next().unwrap().parse::<$rest>().unwrap() ),+ ) };
+    ($line:expr, String) => { $line.split_whitespace().next().unwrap().to_string() };
+    ($line:expr, $t:ty) => { $line.split_whitespace().next().unwrap().parse::<$t>().unwrap() };
+    // Multiple values on a single line
+    ($line:expr, String, $($rest:ty),+) => {{ let mut it = $line.split_whitespace(); (it.next().unwrap().to_string(), $( it.next().unwrap().parse::<$rest>().unwrap() ),+) }};
+    ($line:expr, $t:ty, $($rest:ty),+) => {{ let mut it = $line.split_whitespace(); (it.next().unwrap().parse::<$t>().unwrap(), $( it.next().unwrap().parse::<$rest>().unwrap() ),+) }};
 }
 
 // ===== Demo function =====
 fn demo<R: Read, W: Write>(mut reader: R, mut writer: W) {
     let mut input = String::new();
     reader.read_to_string(&mut input).unwrap();
-    let mut it = input.split_whitespace();
+    let mut lines = input.lines();
 
-    let a = read!(it, i32);
-    let b = read!(it, i64);
-    let s = read!(it, String);
-    // let arr_fixed = read!(it, [i32; 3]);
-    // let arr_var = read!(it, [i32]);
-    let tuple = read!(it, i32, String, i64);
+    // Scalars
+    let line = lines.next().unwrap();
+    let i32_number = read!(line, i32);
+    let line = lines.next().unwrap();
+    let i64_number = read!(line, i64);
+    let line = lines.next().unwrap();
+    let s = read!(line, String);
 
-    writeln!(writer, "a={} b={} s={}", a, b, s).unwrap();
-    // writeln!(writer, "arr_fixed={:?}", arr_fixed).unwrap();
-    // writeln!(writer, "arr_var={:?}", arr_var).unwrap();
+    // Tuples
+    let line = lines.next().unwrap();
+    let tuple = read!(line, i32, String, i64);
+
+    // Fixed-length array
+    let line = lines.next().unwrap();
+    let arr_1d_fix = read!(line, [i32; 3]);
+
+    // Variable-length array
+    let line = lines.next().unwrap();
+    let arr_1d_var = read!(line, [i32]);
+
+    // // 2D array (consume rest of lines)
+    let arr_2d: Vec<Vec<i32>> = read!(lines, [[i32]]);
+
+    writeln!(writer, "i32_number={}", i32_number).unwrap();
+    writeln!(writer, "i64_number={}", i64_number).unwrap();
+    writeln!(writer, "string={}", s).unwrap();
     writeln!(writer, "tuple={:?}", tuple).unwrap();
+    writeln!(writer, "arr_1d_fix={:?}", arr_1d_fix).unwrap();
+    writeln!(writer, "arr_1d_var={:?}", arr_1d_var).unwrap();
+    writeln!(writer, "arr_2d={:?}", arr_2d).unwrap();
 }
 
 // ===== Core solve function =====
 fn solve<R: Read, W: Write>(reader: R, writer: W) {
-    demo(reader, writer);
+    // TODO: implement problem logic here
 }
 
 // ===== main =====
