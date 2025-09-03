@@ -1,0 +1,17 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Run Rust Script",
+      "type": "shell",
+      "command": "cargo",
+      "args": ["run", "--bin", "${fileDirnameBasename}"],
+      "presentation": {
+        "reveal": "never",
+        "panel": "shared",
+        "focus": false
+      },
+      "problemMatcher": []
+    }
+  ]
+}
