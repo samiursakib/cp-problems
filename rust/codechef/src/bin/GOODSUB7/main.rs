@@ -1,3 +1,4 @@
+use std::cmp;
 use std::io::{self, Read, Write};
 use std::fs::{File, OpenOptions};
 
@@ -30,10 +31,13 @@ fn solve<R: Read, W: Write>(mut reader: R, mut writer: W) {
     let t = read!(lines.next().unwrap(), i32);
     for _ in 0..t {
         let n = read!(lines.next().unwrap(), i32);
-        let s = read!(lines.next().unwrap(), String);
-        let (mut i, mut j, mut answer) = (0, 0, 0);
-        let mut answer = s.chars().map(|c| c.to_digit(10).unwrap() as i32).sum::<i32>() * 3;
-        answer -= s.chars().nth(0 as usize).unwrap().to_digit(10).unwrap() as i32 + s.chars().nth((n - 1) as usize).unwrap().to_digit(10).unwrap() as i32;
+        let arr = read!(lines.next().unwrap(), [i32]);
+        let mut answer = 1;
+        for i in 1..n {
+            if arr[i as usize] % 2 != arr[i as usize - 1] % 2 {
+                answer += 1;
+            }
+        }
         writeln!(writer, "{}", answer).unwrap();
     }
 }

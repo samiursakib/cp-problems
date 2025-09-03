@@ -30,11 +30,11 @@ fn solve<R: Read, W: Write>(mut reader: R, mut writer: W) {
     let t = read!(lines.next().unwrap(), i32);
     for _ in 0..t {
         let n = read!(lines.next().unwrap(), i32);
-        let s = read!(lines.next().unwrap(), String);
-        let (mut i, mut j, mut answer) = (0, 0, 0);
-        let mut answer = s.chars().map(|c| c.to_digit(10).unwrap() as i32).sum::<i32>() * 3;
-        answer -= s.chars().nth(0 as usize).unwrap().to_digit(10).unwrap() as i32 + s.chars().nth((n - 1) as usize).unwrap().to_digit(10).unwrap() as i32;
-        writeln!(writer, "{}", answer).unwrap();
+        let mut answer = String::new();
+        for _ in 0..n {
+            answer += "abc";
+        }
+        writeln!(writer, "{}", &answer[..n as usize]).unwrap();
     }
 }
 
